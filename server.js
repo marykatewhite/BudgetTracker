@@ -15,10 +15,18 @@ app.use(express.json());
 
 app.use(express.static("public"));
 
-mongoose.connect("mongodb://heroku_2js353d3:Fr33dum!@ds125016.mlab.com:25016/heroku_2js353d3", {
+mongoose.connect("mongodb://budgettracker:Fr33dum!@ds125016.mlab.com:25016/heroku_2js353d3", {
   useNewUrlParser: true,
   useFindAndModify: false,
   useUnifiedTopology: true
+});
+
+mongoose.connection.on('connected', function(){
+  console.log("connected");
+});
+
+mongoose.connection.on('error', function(){
+  console.log("error");
 });
 
 // routes
