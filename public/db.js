@@ -1,4 +1,4 @@
-export function checkForIndexedDb() {
+function checkForIndexedDb() {
   if (!window.indexedDB) {
     console.log("Nope!");
     return false;
