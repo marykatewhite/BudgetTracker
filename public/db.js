@@ -1,21 +1,27 @@
-function checkForIndexedDb() {
-  if (!window.indexedDB) {
-    console.log("Nope!");
-    return false;
-  }
-  return true;
-}
-
-const request = window.indexedDB.open("budget", 1);
+const indexedDB = window.indexedDB;
+const request = indexedDB.open("budget", 1);
 let db;
 
 request.onupgradeneeded = function(e) {
-  let db = request.result;
-  db.createObjectStore("transaction", { autoIncrement: true });
+  let db = event.target.result;
+  db.createObjectStore("pending", { autoIncrement: true });
 };
 
 request.onerror = function(e) {
   console.log("There was an error");
+};
+
+request.onsuccess = function(event) {
+  db = event.target.result;
+  if (navigator.onLine) {
+    checkDatabase();
+  }
+};
+
+function saveRecord(record) {
+  const transaction = db.transaction(["pending"], "readwrite");
+  const store = transaction.objectStore("pending");
+  store.add(record);
 };
 
 function checkDatabase() {
@@ -33,14 +39,14 @@ function checkDatabase() {
           "Content-Type": "application/json"
         }
       })
-      .then(response => {        
-        return response.json();
-      })
-      .then(() => {
-        const transaction = db.transaction(["pending"], "readwrite");
-        const store = transaction.objectStore("pending");
-        store.clear();
-      });
+        .then(response => {
+          return response.json();
+        })
+        .then(() => {
+          const transaction = db.transaction(["pending"], "readwrite");
+          const store = transaction.objectStore("pending");
+          store.clear();
+        });
     }
   };
 }
